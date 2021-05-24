@@ -1,5 +1,20 @@
+起因
+---
+
+1. 原代码实现了分段式自动加载progress bar；
+2. 业务上可实现：点击左边展示前一张图片，或点右边展示后一张；
+3. 同时可实现：按下暂停，松开继续；
+4. 但：不能循环
+
+经过
+---
+
+1. 添加循环功能，前进后退都可循环
+2. 修改callback，将index带上
+
+---
 StoriesProgressView
-====
+===================
 
 Library that shows a horizontal progress like Instagram stories.
 
