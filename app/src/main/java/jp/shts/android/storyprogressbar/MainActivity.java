@@ -2,10 +2,14 @@ package jp.shts.android.storyprogressbar;
 
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.util.Log;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import jp.shts.android.storiesprogressview.StoriesProgressView;
 
@@ -91,14 +95,22 @@ public class MainActivity extends AppCompatActivity implements StoriesProgressVi
     }
 
     @Override
-    public void onNext() {
-        image.setImageResource(resources[++counter]);
+    public void onStoryStart() {
+        Toast toast= Toast.makeText(MainActivity.this,"story start",Toast.LENGTH_SHORT);
+        toast.setGravity(Gravity.TOP, 0, 0);
+        toast.show();
     }
 
     @Override
-    public void onPrev() {
-        if ((counter - 1) < 0) return;
-        image.setImageResource(resources[--counter]);
+    public void onNext(int index) {
+        Log.d("zj","index:" +index);
+        image.setImageResource(resources[index]);
+    }
+
+    @Override
+    public void onPrev(int index) {
+        Log.d("zj","index:" +index);
+        image.setImageResource(resources[index]);
     }
 
     @Override

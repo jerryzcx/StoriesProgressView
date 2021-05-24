@@ -66,7 +66,17 @@ final class PausableProgressBar extends FrameLayout {
     void setMinWithoutCallback() {
         maxProgressView.setBackgroundResource(R.color.progress_secondary);
 
-        maxProgressView.setVisibility(VISIBLE);
+
+        /**
+         * @author zj
+         * change
+         */
+//        maxProgressView.setVisibility(VISIBLE);
+        maxProgressView.setVisibility(GONE);
+        frontProgressView.setVisibility(INVISIBLE);
+        /**
+         * end
+         */
         if (animation != null) {
             animation.setAnimationListener(null);
             animation.cancel();
@@ -119,6 +129,15 @@ final class PausableProgressBar extends FrameLayout {
         });
         animation.setFillAfter(true);
         frontProgressView.startAnimation(animation);
+    }
+
+    /**
+     * @author zj
+     * reset func
+     */
+    public void resetProgress(){
+        maxProgressView.setVisibility(GONE);
+        frontProgressView.setVisibility(View.GONE);
     }
 
     public void pauseProgress() {

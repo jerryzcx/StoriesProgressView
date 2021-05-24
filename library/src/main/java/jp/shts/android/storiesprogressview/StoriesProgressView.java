@@ -33,10 +33,17 @@ public class StoriesProgressView extends LinearLayout {
     private boolean isSkipStart;
     private boolean isReverseStart;
 
-    public interface StoriesListener {
-        void onNext();
+    /**
+     * @author by zj
+     */
+    public boolean isStarted;
 
-        void onPrev();
+    public interface StoriesListener {
+        void onStoryStart(); //
+
+        void onNext(int index);
+
+        void onPrev(int index);
 
         void onComplete();
     }
@@ -70,6 +77,7 @@ public class StoriesProgressView extends LinearLayout {
     }
 
     private void bindViews() {
+        isStarted = false;//
         progressBars.clear();
         removeAllViews();
 
@@ -173,36 +181,82 @@ public class StoriesProgressView extends LinearLayout {
 
             @Override
             public void onFinishProgress() {
+//                if (isReverseStart) {
+//                    int prev = (current - 1) % progressBars.size();
+//                    if (storiesListener != null) storiesListener.onPrev(prev);
+//                    if (0 <= (current - 1)) {
+//                        PausableProgressBar p = progressBars.get(current - 1);
+//                        p.setMinWithoutCallback();
+//                        progressBars.get(--current).startProgress();
+//                    } else {
+//                        progressBars.get(current).startProgress();
+//                    }
+//                    isReverseStart = false;
+//                    return;
+//                }
+//                int next = current + 1;
+//                if (next <= (progressBars.size() - 1)) {
+//                    if (storiesListener != null) storiesListener.onNext();
+//                    progressBars.get(next).startProgress();
+//                } else {
+//                    isComplete = true;
+//                    if (storiesListener != null) storiesListener.onComplete();
+//                }
+//                isSkipStart = false;
+
+                /**
+                 * @author by zj
+                 */
                 if (isReverseStart) {
-                    if (storiesListener != null) storiesListener.onPrev();
-                    if (0 <= (current - 1)) {
-                        PausableProgressBar p = progressBars.get(current - 1);
-                        p.setMinWithoutCallback();
-                        progressBars.get(--current).startProgress();
-                    } else {
-                        progressBars.get(current).startProgress();
+                    int prev = (current - 1 + progressBars.size()) % progressBars.size();
+                    if (prev == progressBars.size() - 1) {
+                        for (PausableProgressBar p : progressBars) {
+                            p.setMaxWithoutCallback();
+                        }
                     }
+                    if (storiesListener != null) storiesListener.onPrev(prev);
+                    PausableProgressBar p = progressBars.get(prev);
+                    p.setMinWithoutCallback();
+                    progressBars.get(prev).startProgress();
+                    current = prev;
                     isReverseStart = false;
                     return;
                 }
-                int next = current + 1;
-                if (next <= (progressBars.size() - 1)) {
-                    if (storiesListener != null) storiesListener.onNext();
-                    progressBars.get(next).startProgress();
-                } else {
-                    isComplete = true;
-                    if (storiesListener != null) storiesListener.onComplete();
+                int next = (current + 1) % progressBars.size();
+                if (next == 0) {
+                    for (PausableProgressBar p : progressBars) {
+                        p.setMinWithoutCallback();
+                    }
                 }
+                if (storiesListener != null) storiesListener.onNext(next);
+                progressBars.get(next).startProgress();
                 isSkipStart = false;
+                /**
+                 * end
+                 */
             }
         };
+    }
+
+    /**
+     * @author zj
+     * reset
+     */
+    public void reset(){
+        for (PausableProgressBar p : progressBars) {
+            p.setMinWithoutCallback();
+        }
+        isStarted = false;
     }
 
     /**
      * Start progress animation
      */
     public void startStories() {
+        reset();
         progressBars.get(0).startProgress();
+        if (storiesListener != null) storiesListener.onStoryStart();
+        isStarted = true;
     }
 
     /**
@@ -213,6 +267,8 @@ public class StoriesProgressView extends LinearLayout {
             progressBars.get(i).setMaxWithoutCallback();
         }
         progressBars.get(from).startProgress();
+        if (storiesListener != null) storiesListener.onStoryStart();
+        isStarted = true;
     }
 
     /**
@@ -222,6 +278,7 @@ public class StoriesProgressView extends LinearLayout {
         for (PausableProgressBar p : progressBars) {
             p.clear();
         }
+        isStarted = false;
     }
 
     /**
@@ -230,6 +287,7 @@ public class StoriesProgressView extends LinearLayout {
     public void pause() {
         if (current < 0) return;
         progressBars.get(current).pauseProgress();
+        isStarted = false;
     }
 
     /**
@@ -238,5 +296,6 @@ public class StoriesProgressView extends LinearLayout {
     public void resume() {
         if (current < 0) return;
         progressBars.get(current).resumeProgress();
+        isStarted = true;
     }
 }
